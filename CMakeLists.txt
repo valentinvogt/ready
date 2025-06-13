@@ -71,24 +71,24 @@ set( BASE_SOURCES      # core code used in all executables
   src/extern/PerlinNoise.hpp
 )
 
-set( GUI_SOURCES      # GUI code used only in Ready
-  src/gui/IDs.hpp
-  src/gui/wxutils.hpp                      src/gui/wxutils.cpp
-  src/gui/dialogs.hpp                      src/gui/dialogs.cpp
-  src/gui/prefs.hpp                        src/gui/prefs.cpp
-  src/gui/app.hpp                          src/gui/app.cpp
-  src/gui/frame.hpp                        src/gui/frame.cpp
-  src/gui/HelpPanel.hpp                    src/gui/HelpPanel.cpp
-  src/gui/InfoPanel.hpp                    src/gui/InfoPanel.cpp
-  src/gui/HtmlInfo.hpp                     src/gui/HtmlInfo.cpp
-  src/gui/PatternsPanel.hpp                src/gui/PatternsPanel.cpp
-  src/gui/vtk_pipeline.hpp                 src/gui/vtk_pipeline.cpp
-  src/gui/InteractorStylePainter.hpp       src/gui/InteractorStylePainter.cpp
-  src/gui/wxVTKRenderWindowInteractor.h    src/gui/wxVTKRenderWindowInteractor.cxx
-  src/gui/RecordingDialog.hpp              src/gui/RecordingDialog.cpp
-  src/gui/ImportImageDialog.hpp            src/gui/ImportImageDialog.cpp
-  src/gui/MakeNewSystem.hpp                src/gui/MakeNewSystem.cpp
-)
+# set( GUI_SOURCES      # GUI code used only in Ready
+#   src/gui/IDs.hpp
+#   src/gui/wxutils.hpp                      src/gui/wxutils.cpp
+#   src/gui/dialogs.hpp                      src/gui/dialogs.cpp
+#   src/gui/prefs.hpp                        src/gui/prefs.cpp
+#   src/gui/app.hpp                          src/gui/app.cpp
+#   src/gui/frame.hpp                        src/gui/frame.cpp
+#   src/gui/HelpPanel.hpp                    src/gui/HelpPanel.cpp
+#   src/gui/InfoPanel.hpp                    src/gui/InfoPanel.cpp
+#   src/gui/HtmlInfo.hpp                     src/gui/HtmlInfo.cpp
+#   src/gui/PatternsPanel.hpp                src/gui/PatternsPanel.cpp
+#   src/gui/vtk_pipeline.hpp                 src/gui/vtk_pipeline.cpp
+#   src/gui/InteractorStylePainter.hpp       src/gui/InteractorStylePainter.cpp
+#   src/gui/wxVTKRenderWindowInteractor.h    src/gui/wxVTKRenderWindowInteractor.cxx
+#   src/gui/RecordingDialog.hpp              src/gui/RecordingDialog.cpp
+#   src/gui/ImportImageDialog.hpp            src/gui/ImportImageDialog.cpp
+#   src/gui/MakeNewSystem.hpp                src/gui/MakeNewSystem.cpp
+# )
 
 set( CMD_SOURCES      # code used only in the command-line version
   src/cmd/main.cpp
@@ -423,8 +423,8 @@ endif()
 if(UNIX AND NOT APPLE)
   SET(WXGLCANVASLIBS "gl")
 endif()
-FIND_PACKAGE( wxWidgets COMPONENTS html aui ${WXGLCANVASLIBS} core adv base REQUIRED)
-INCLUDE( ${wxWidgets_USE_FILE} )
+# FIND_PACKAGE( wxWidgets COMPONENTS html aui ${WXGLCANVASLIBS} core adv base REQUIRED)
+# INCLUDE( ${wxWidgets_USE_FILE} )
 
 if( MSVC )
   # To avoid link errors in Release build in Visual Studio: unresolved external symbol onAssert
@@ -436,23 +436,23 @@ endif()
 #-------------------------------------------wxVTK----------------------------------------------
 
 # The following allows you to access wxGLCanvas for GTK
-if(WIN32)
-  set(GUI_EXECUTABLE WIN32)
-else()
-  if(APPLE)
-    SET(GUI_EXECUTABLE MACOSX_BUNDLE)
-    IF(VTK_USE_COCOA)
-      SET_SOURCE_FILES_PROPERTIES(
-        src/gui/wxVTKRenderWindowInteractor.cxx
-        PROPERTIES COMPILE_FLAGS "-ObjC++")
-    ENDIF(VTK_USE_COCOA)
-  else()
-    find_package(PkgConfig)
-    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-    include_directories(${GTK3_INCLUDE_DIRS})
-    link_libraries(${GTK3_LIBRARIES})
-  endif()
-endif()
+# if(WIN32)
+#   set(GUI_EXECUTABLE WIN32)
+# else()
+#   if(APPLE)
+#     SET(GUI_EXECUTABLE MACOSX_BUNDLE)
+#     IF(VTK_USE_COCOA)
+#       SET_SOURCE_FILES_PROPERTIES(
+#         src/gui/wxVTKRenderWindowInteractor.cxx
+#         PROPERTIES COMPILE_FLAGS "-ObjC++")
+#     ENDIF(VTK_USE_COCOA)
+#   else()
+#     find_package(PkgConfig)
+#     pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+#     include_directories(${GTK3_INCLUDE_DIRS})
+#     link_libraries(${GTK3_LIBRARIES})
+#   endif()
+# endif()
 
 #-------------------------------------------OpenCL----------------------------------------------
 
@@ -491,22 +491,22 @@ foreach( flag_var ${FLAG_VARS} )
   set( ${flag_var} "${new_flags}" CACHE STRING "" FORCE )
 endforeach()
 
-set( USE_SSE "YES" CACHE BOOL "Set to false if your CPU doesn't have SSE support.")
-if( USE_SSE )
-  # enable SSE to allow us to set flags to avoid denormals, and relax the floating-point accuracy for speed
-  if( MSVC )
-    if( CMAKE_CL_64 )
-      set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fp:fast" )
-      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast" )
-    else() # avoid warning on x64, which always comes with SSE2
-      set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /arch:SSE2 /fp:fast" )
-      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2 /fp:fast" )
-    endif()
-  else()
-    add_definitions( -msse2 -ffast-math )
-  endif()
-  add_definitions( -DUSE_SSE )
-endif()
+set( USE_SSE 0 CACHE BOOL "Set to false if your CPU doesn't have SSE support.")
+# if( USE_SSE )
+#   # enable SSE to allow us to set flags to avoid denormals, and relax the floating-point accuracy for speed
+#   if( MSVC )
+#     if( CMAKE_CL_64 )
+#       set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fp:fast" )
+#       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast" )
+#     else() # avoid warning on x64, which always comes with SSE2
+#       set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /arch:SSE2 /fp:fast" )
+#       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2 /fp:fast" )
+#     endif()
+#   else()
+#     add_definitions(-ffast-math )
+#   endif()
+#   add_definitions( -DUSE_SSE )
+# endif()
 
 if( APPLE )
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
@@ -538,28 +538,28 @@ target_include_directories( ${CMD_NAME} PRIVATE src/extern/cxxopts-2.2.1 )
 target_link_libraries( ${CMD_NAME} readybase ${CMAKE_DL_LIBS})
 
 # create GUI application
-add_executable( ${APP_NAME} ${GUI_EXECUTABLE} ${GUI_SOURCES} ${RESOURCES} )
-target_include_directories( ${APP_NAME} PRIVATE src/gui resources )
-target_link_libraries( ${APP_NAME} readybase ${wxWidgets_LIBRARIES} )
+# add_executable( ${APP_NAME} ${GUI_EXECUTABLE} ${GUI_SOURCES} ${RESOURCES} )
+# target_include_directories( ${APP_NAME} PRIVATE src/gui resources )
+# target_link_libraries( ${APP_NAME} readybase ${wxWidgets_LIBRARIES} )
 
-if( APPLE )
-  # create Info.plist (using Info.plist.in) and PkgInfo files inside .app bundle
-  add_custom_target( app_bundle
-    COMMAND sed -e "s/VERSION/${READY_VERSION}/" ${CMAKE_SOURCE_DIR}/resources/Info.plist.in >Ready.app/Contents/Info.plist
-    COMMAND echo -n "APPLReDy" >Ready.app/Contents/PkgInfo
-  )
-  add_dependencies( ${APP_NAME} app_bundle )
+# if( APPLE )
+#   # create Info.plist (using Info.plist.in) and PkgInfo files inside .app bundle
+#   add_custom_target( app_bundle
+#     COMMAND sed -e "s/VERSION/${READY_VERSION}/" ${CMAKE_SOURCE_DIR}/resources/Info.plist.in >Ready.app/Contents/Info.plist
+#     COMMAND echo -n "APPLReDy" >Ready.app/Contents/PkgInfo
+#   )
+#   add_dependencies( ${APP_NAME} app_bundle )
 
-  # copy *.icns files into Resources directory inside .app bundle
-  set_source_files_properties( ${CMAKE_SOURCE_DIR}/resources/app.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-  set_source_files_properties( ${CMAKE_SOURCE_DIR}/resources/file.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+#   # copy *.icns files into Resources directory inside .app bundle
+#   set_source_files_properties( ${CMAKE_SOURCE_DIR}/resources/app.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+#   set_source_files_properties( ${CMAKE_SOURCE_DIR}/resources/file.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
-  # remove unreachable functions and data, and don't add debug info (reduces app size by about 12MB)
-  target_link_libraries( ${APP_NAME} -Wl,-dead_strip -Wl,-S )
+#   # remove unreachable functions and data, and don't add debug info (reduces app size by about 12MB)
+#   target_link_libraries( ${APP_NAME} -Wl,-dead_strip -Wl,-S )
 
-  # horrible hack to avoid Undefined symbol "___isPlatformVersionAtLeast" using wxMac 3.1.3 on Mojave
-  # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.osx.a" )
-endif()
+#   # horrible hack to avoid Undefined symbol "___isPlatformVersionAtLeast" using wxMac 3.1.3 on Mojave
+#   # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.osx.a" )
+# endif()
 
 # avoid security warnings
 if( MSVC )
@@ -573,78 +573,78 @@ endif()
 
 #----------------------------------------doxygen------------------------------------------------
 
-find_package( Doxygen )
-if(DOXYGEN_FOUND)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-  add_custom_target(doc
-    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
-endif()
+# find_package( Doxygen )
+# if(DOXYGEN_FOUND)
+#   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+#   add_custom_target(doc
+#     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#   )
+# endif()
 # (if doxygen is found then 'make doc' should produce html documentation of the source code)
 
 #------------------------------------------test-------------------------------------------------
 
-enable_testing()
+# enable_testing()
 
-# Test that we can run rdy and print out the help information
-add_test(
-  NAME rdy_help
-  COMMAND ${CMD_NAME} -h
-)
+# # Test that we can run rdy and print out the help information
+# add_test(
+#   NAME rdy_help
+#   COMMAND ${CMD_NAME} -h
+# )
 
-# Test that we can load each pattern and compile its kernel
-foreach(pattern_file ${PATTERN_FILES})
-  add_test(
-    NAME load_${pattern_file}
-    COMMAND ${CMD_NAME} -i "${pattern_file}" -v
-  )
-endforeach()
+# # Test that we can load each pattern and compile its kernel
+# foreach(pattern_file ${PATTERN_FILES})
+#   add_test(
+#     NAME load_${pattern_file}
+#     COMMAND ${CMD_NAME} -i "${pattern_file}" -v
+#   )
+# endforeach()
 
-# Test that we can run one pattern for 100 steps and save it out
-add_test(
-  NAME rdy_run
-  COMMAND ${CMD_NAME} -i Patterns/CPU-only/grayscott_1D.vti -n 100 -o gs_100.vti -v
-)
+# # Test that we can run one pattern for 100 steps and save it out
+# add_test(
+#   NAME rdy_run
+#   COMMAND ${CMD_NAME} -i Patterns/CPU-only/grayscott_1D.vti -n 100 -o gs_100.vti -v
+# )
 
-# And then read it in again
-add_test(
-  NAME rdy_run2
-  COMMAND ${CMD_NAME} -i gs_100.vti -v
-)
+# # And then read it in again
+# add_test(
+#   NAME rdy_run2
+#   COMMAND ${CMD_NAME} -i gs_100.vti -v
+# )
 
 #----------------------------------------install------------------------------------------------
 
-# put Ready in the root of the installation folder instead of in "bin"
-install( TARGETS ${APP_NAME} ${CMD_NAME} DESTINATION "." )
+# # put Ready in the root of the installation folder instead of in "bin"
+# install( TARGETS ${APP_NAME} ${CMD_NAME} DESTINATION "." )
 
-# install our source files, resource files, pattern files, help files and text files
-foreach( source_file ${BASE_SOURCES} ${GUI_SOURCES} ${CMD_SOURCES} ${RESOURCES} ${PATTERN_FILES} ${HELP_FILES} ${OTHER_FILES} )
-  get_filename_component( path_name "${source_file}" PATH )
-  install( FILES "${source_file}" DESTINATION ${path_name} )
-endforeach()
+# # install our source files, resource files, pattern files, help files and text files
+# foreach( source_file ${BASE_SOURCES} ${GUI_SOURCES} ${CMD_SOURCES} ${RESOURCES} ${PATTERN_FILES} ${HELP_FILES} ${OTHER_FILES} )
+#   get_filename_component( path_name "${source_file}" PATH )
+#   install( FILES "${source_file}" DESTINATION ${path_name} )
+# endforeach()
 
 #----------------------------------------package----------------------------------------------
 
-if( APPLE )
-  set( CPACK_SYSTEM_NAME "Mac" )  # nicer than "Darwin"
-elseif( UNIX )
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( CPACK_SYSTEM_NAME "Linux-64bit" )
-  else()
-    set( CPACK_SYSTEM_NAME "Linux-32bit" )
-  endif()
-elseif( WIN32)
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( CPACK_SYSTEM_NAME "Windows-64bit" )
-  else()
-    set( CPACK_SYSTEM_NAME "Windows-32bit" )
-  endif()
-endif()
-if( NOT USE_SSE )
-  set( CPACK_SYSTEM_NAME "${CPACK_SYSTEM_NAME}-noSSE" )
-endif()
-set( CPACK_GENERATOR "ZIP" )
-set( CPACK_PACKAGE_VERSION "${READY_VERSION}" )
-set( CPACK_SOURCE_GENERATOR "ZIP" )
-include( CPack )
+# if( APPLE )
+#   set( CPACK_SYSTEM_NAME "Mac" )  # nicer than "Darwin"
+# elseif( UNIX )
+#   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+#     set( CPACK_SYSTEM_NAME "Linux-64bit" )
+#   else()
+#     set( CPACK_SYSTEM_NAME "Linux-32bit" )
+#   endif()
+# elseif( WIN32)
+#   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+#     set( CPACK_SYSTEM_NAME "Windows-64bit" )
+#   else()
+#     set( CPACK_SYSTEM_NAME "Windows-32bit" )
+#   endif()
+# endif()
+# if( NOT USE_SSE )
+#   set( CPACK_SYSTEM_NAME "${CPACK_SYSTEM_NAME}-noSSE" )
+# endif()
+# set( CPACK_GENERATOR "ZIP" )
+# set( CPACK_PACKAGE_VERSION "${READY_VERSION}" )
+# set( CPACK_SOURCE_GENERATOR "ZIP" )
+# include( CPack )

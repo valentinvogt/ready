@@ -2,3 +2,7 @@ build
 
 # Mac stuff
 .DS_Store
+
+not_needed
+.cache
+out

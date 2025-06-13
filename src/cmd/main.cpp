@@ -87,6 +87,7 @@ int main(int argc,char *argv[])
     int opencl_platform = 0;
     int opencl_device = 0;
     bool verbose = false;
+    std::string snapshot_path = "out/snapshot_";
 
     cxxopts::Options options("rdy", "Command-line version of Ready");
     try
@@ -100,11 +101,12 @@ int main(int argc,char *argv[])
             ("u,print-rule-info", "Print rule info", cxxopts::value<bool>(print_rule_info)->default_value("false"))
             ("r,print-reagent-info", "Print reagent info", cxxopts::value<bool>(print_reagent_info)->default_value("false"))
             ("p,print-parameter-info", "Print parameter info", cxxopts::value<bool>(print_parameter_info)->default_value("false"))
-            ("s,print-render-settings", "Print render Settings", cxxopts::value<bool>(print_render_settings)->default_value("false"))
+            // ("s,print-render-settings", "Print render Settings", cxxopts::value<bool>(print_render_settings)->default_value("false"))
             ("d,print-formula-description", "Print formula Description", cxxopts::value<bool>(print_formula_description)->default_value("false"))
             ("m,print-initial-state-images", "Print initial state images (Warning: May be large!)", cxxopts::value<bool>(print_initial_state_images)->default_value("false"))
             ("i,vti-in", "VTI file to load (required)", cxxopts::value<string>(vti_in))
             ("o,vti-out", "VTI file to save (optional)", cxxopts::value<string>(vti_out))
+            ("s,snapshot-path", "Path to save snapshots to (default: out/snapshot_)", cxxopts::value<string>(snapshot_path)->default_value("out/snapshot_"))
             // TODO don't crash if incorrect, fail more gracefully!
             ("l,opencl-platform", "OpenCL platform number (Currently will crash if incorrect!)", cxxopts::value<int>(opencl_platform))
             ("g,opencl-device", "OpenCL device number (Currently will crash if incorrect!)", cxxopts::value<int>(opencl_device))
@@ -360,21 +362,42 @@ int main(int argc,char *argv[])
         if ( numiter > 0 )
         {
             cout << "Run the simulation for " << numiter << " steps...\n";
-            system->Update( numiter );
+            int num_snapshots = 100;
+            int snapshot_interval = numiter / num_snapshots;
+            std::string snapshot_filename =
+                snapshot_path + std::to_string(0) + ".vti";
 
-            if ( !vti_out.empty() )
+            system->SaveFile(snapshot_filename.c_str(), render_settings, false);
+            for (int i = 0; i < num_snapshots; i++)
             {
-                // save something out
-                cout << "Saving file as " << vti_out << " ...\n";
-                try {
-                    system->SaveFile( vti_out.c_str(), render_settings, false );
-                } catch(const exception& e) { //doesn't catch segfaults! :/
-                    cout << "Something went wrong when saving file to: " << vti_out.c_str() << "\n";
-                    cout << e.what() << "\n";
+                if (verbose)
+                {
+                    cout << "Taking snapshot " << i+1 << " of " << num_snapshots << "...\n";
                 }
-            } else {
-                cout << "Output file not specified, not saving anything.\n";
+                int interval = snapshot_interval;
+                if (snapshot_interval * (i+1) > numiter)
+                {
+                    interval = numiter - snapshot_interval * i;
+                }
+                system->Update( interval );
+                std::string snapshot_filename = snapshot_path + std::to_string(i+1) + ".vti";
+                system->SaveFile( snapshot_filename.c_str(), render_settings, false );
             }
+            // system->Update( numiter );
+
+            // if ( !vti_out.empty() )
+            // {
+            //     // save something out
+            //     cout << "Saving file as " << vti_out << " ...\n";
+            //     try {
+            //         system->SaveFile( vti_out.c_str(), render_settings, false );
+            //     } catch(const exception& e) { //doesn't catch segfaults! :/
+            //         cout << "Something went wrong when saving file to: " << vti_out.c_str() << "\n";
+            //         cout << e.what() << "\n";
+            //     }
+            // } else {
+            //     cout << "Output file not specified, not saving anything.\n";
+            // }
         } else {
             if (verbose)
             {
