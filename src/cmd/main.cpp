@@ -87,7 +87,7 @@ int main(int argc,char *argv[])
     int opencl_platform = 0;
     int opencl_device = 0;
     bool verbose = false;
-    std::string snapshot_path = "out/";
+    std::string snapshot_path = "out";
     int num_snapshots = 1;
     cxxopts::Options options("rdy", "Command-line version of Ready");
     try
@@ -106,7 +106,7 @@ int main(int argc,char *argv[])
             ("m,print-initial-state-images", "Print initial state images (Warning: May be large!)", cxxopts::value<bool>(print_initial_state_images)->default_value("false"))
             ("i,vti-in", "VTI file to load (required)", cxxopts::value<string>(vti_in))
             ("o,vti-out", "VTI file to save (optional)", cxxopts::value<string>(vti_out))
-            ("snapshot-path", "Path to save snapshots to (default: out/)", cxxopts::value<string>(snapshot_path)->default_value("out/"))
+            ("snapshot-path", "Path to save snapshots to (default: out)", cxxopts::value<string>(snapshot_path)->default_value("out"))
             ("num-snapshots", "Number of snapshots to save (default: 1)", cxxopts::value<int>(num_snapshots)->default_value("1"))
             // TODO don't crash if incorrect, fail more gracefully!
             ("l,opencl-platform", "OpenCL platform number (Currently will crash if incorrect!)", cxxopts::value<int>(opencl_platform))
@@ -370,7 +370,7 @@ int main(int argc,char *argv[])
                 std::filesystem::create_directories(snapshot_path);
             }
             std::string snapshot_filename =
-                snapshot_path + std::to_string(0) + ".vti";
+                snapshot_path + "/" std::to_string(0) + ".vti";
             system->SaveFile(snapshot_filename.c_str(), render_settings, false);
             for (int i = 0; i < num_snapshots; i++)
             {
@@ -384,7 +384,7 @@ int main(int argc,char *argv[])
                     interval = numiter - snapshot_interval * i;
                 }
                 system->Update( interval );
-                std::string snapshot_filename = snapshot_path + std::to_string(i+1) + ".vti";
+                std::string snapshot_filename = snapshot_path + "/" + std::to_string(i+1) + ".vti";
                 system->SaveFile( snapshot_filename.c_str(), render_settings, false );
             }
             // system->Update( numiter );
