@@ -362,7 +362,9 @@ int main(int argc,char *argv[])
 
         if ( numiter > 0 )
         {
-            cout << "Run the simulation for " << numiter << " steps...\n";
+            if (verbose) {
+                cout << "Run the simulation for " << numiter << " steps...\n";
+            }
             int snapshot_interval = numiter / num_snapshots;
             // Create snapshot directory if it doesn't exist:
             if (!std::filesystem::exists(snapshot_path))
@@ -370,14 +372,10 @@ int main(int argc,char *argv[])
                 std::filesystem::create_directories(snapshot_path);
             }
             std::string snapshot_filename =
-                snapshot_path + "/" std::to_string(0) + ".vti";
+                snapshot_path + "/" + std::to_string(0) + ".vti";
             system->SaveFile(snapshot_filename.c_str(), render_settings, false);
             for (int i = 0; i < num_snapshots; i++)
             {
-                if (verbose)
-                {
-                    cout << "Taking snapshot " << i+1 << " of " << num_snapshots << "...\n";
-                }
                 int interval = snapshot_interval;
                 if (snapshot_interval * (i+1) > numiter)
                 {

@@ -17,7 +17,7 @@
 #
 #--------------------------------------------------------------------------
 
-cmake_minimum_required( VERSION 2.6...3.5 )
+cmake_minimum_required( VERSION 2.6...3.10 )
 # - The min version is enforced (older versions of CMake will give an error). It should be set to the oldest
 #   version that we know works with our build on every platform.
 # - The max version tells CMake not to use any CMake features newer than this, in case they break something.
@@ -334,7 +334,7 @@ set( OTHER_FILES
 )
 
 #-------------------------------------------VTK----------------------------------------------
-
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Qt6Quick REQUIRED)
 find_package( VTK NO_MODULE REQUIRED )
 if( VTK_VERSION VERSION_LESS "7.0.0" )
   set( VTK_COMPONENTS
